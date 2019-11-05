@@ -70,29 +70,47 @@ namespace DisplayMonkey
 
                 //int showEvents = outlook.ShowEvents;
                 List<EventEntry> currentList = data.events
-                    .Where(e => e.Ends >= locationTime)
+                    //The below line filters out events earlier in the day.
+                    //.Where(e => e.Ends >= locationTime)
                     .Take(Math.Max(1, outlook.ShowEvents))
                     .ToList()
                     ;
                 
                 EventEntry 
                     currentEvent = null,
-                    firstEvent = currentList.FirstOrDefault()
+                    firstEvent = null
                     ;
 
-                if (firstEvent != null && firstEvent.Starts <= locationTime)
-                {
-                    currentEvent = firstEvent;
-                }
-
                 DateTime endTime = locationToday.Add(data.endTime);
-                string 
+                string
                     strCurrentEvent = "",
                     strCurrentStatus = string.Format(
                         Resources.Outlook_AvailableUntil,
                         endTime.ToShortTimeString()
                         )
                     ;
+
+                //Find the current event from full list. 
+                long min = long.MaxValue;
+                foreach (EventEntry calevent in currentList)
+                {
+                    if (calevent.Ends > locationTime) 
+                        {
+                         if (Math.Abs(calevent.Ends.Ticks - locationTime.Ticks) < min)
+                         {
+                           min = Math.Abs(calevent.Ends.Ticks - locationTime.Ticks);
+                           currentEvent = calevent;
+                           firstEvent = calevent;
+                         }
+                       }
+                }
+
+                if (firstEvent != null && firstEvent.Starts <= locationTime && currentEvent == null)
+                {
+                    currentEvent = firstEvent;
+                }
+
+
                 TimeSpan availableTime = new TimeSpan(0);
                     
                 if (currentEvent != null)
@@ -122,6 +140,7 @@ namespace DisplayMonkey
                     availableTime = endTime.Subtract(locationTime);
                 }
 
+                #region -------- JSON Serialization --------
                 JavaScriptSerializer jss = new JavaScriptSerializer();
                 jss.RegisterConverters(new[] { new EventEntryConverter() });
                 json = jss.Serialize(new
@@ -179,8 +198,9 @@ namespace DisplayMonkey
                     },
                 });
 			}
-
-			catch (Exception ex)
+            #endregion 
+			#region  -------- Catch --------
+            catch (Exception ex)
 			{
                 JavaScriptSerializer s = new JavaScriptSerializer();
                 if (trace == 0)
@@ -209,7 +229,7 @@ namespace DisplayMonkey
                         },
                     });
             }
-
+            #endregion
             response.Clear();
             response.Cache.SetCacheability(HttpCacheability.NoCache);
             response.Cache.SetSlidingExpiration(true);
