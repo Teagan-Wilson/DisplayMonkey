@@ -15,7 +15,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
 	<title><asp:Literal ID="lTitle" runat="server" EnableViewState="False"></asp:Literal></title>
-
+    <script src="https://raw.githubusercontent.com/lazd/iNoBounce/master/inobounce.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css">
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <link rel="apple-touch-icon" sizes="57x57" href="~/files/apple-touch-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="~/files/apple-touch-icon-60x60.png">

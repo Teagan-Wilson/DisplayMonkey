@@ -94,20 +94,25 @@ namespace DisplayMonkey
                 long min = long.MaxValue;
                 foreach (EventEntry calevent in currentList)
                 {
-                    if (calevent.Ends > locationTime) 
+                    //Event ends after current time
+                    if (calevent.Ends > locationTime)
                         {
-                         if (Math.Abs(calevent.Ends.Ticks - locationTime.Ticks) < min)
-                         {
-                           min = Math.Abs(calevent.Ends.Ticks - locationTime.Ticks);
-                           currentEvent = calevent;
-                           firstEvent = calevent;
+                            //If event is currently running:
+                            if (calevent.Starts < locationTime)
+                            {
+                                currentEvent = calevent;
+                            }
+                            else
+                            {
+                                //Compare the current event start time in this loop vs the previous closest to the current time.
+                                if ((calevent.Starts.Ticks - locationTime.Ticks) < min)
+                                {
+                                //min represents the ticks until meeting starts.  
+                                min = (calevent.Starts.Ticks - locationTime.Ticks);
+                                firstEvent = calevent;
+                                }
                          }
                        }
-                }
-
-                if (firstEvent != null && firstEvent.Starts <= locationTime && currentEvent == null)
-                {
-                    currentEvent = firstEvent;
                 }
 
 
